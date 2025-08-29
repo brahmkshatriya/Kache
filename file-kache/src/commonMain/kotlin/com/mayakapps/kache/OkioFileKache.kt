@@ -56,7 +56,7 @@ public class OkioFileKache internal constructor(
     @Suppress("RemoveExplicitTypeArguments")
     private val underlyingKache = InMemoryKache<String, String>(maxSize = maxSize) {
         this.strategy = strategy
-        this.sizeCalculator = { _, filename -> fileSystem.metadata(filesDirectory.resolve(filename)).size ?: 0 }
+        this.sizeCalculator = { _, filename -> runCatching { fileSystem.metadata(filesDirectory.resolve(filename)).size }.getOrNull() ?: 0 }
         this.onEntryRemoved = { _, key, oldValue, newValue -> onEntryRemoved(key, oldValue, newValue) }
         this.creationScope = this@OkioFileKache.creationScope
     }
