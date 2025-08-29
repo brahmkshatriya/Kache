@@ -16,7 +16,6 @@ env:
 jobs:
   extract-version:
     name: Extract Library Version
-    if: github.repository == 'MayakaApps/Kache'
     uses: ./.github/workflows/extract-version.yml
 
   publish-library:
@@ -25,7 +24,7 @@ jobs:
     needs: extract-version
 
     runs-on: macOS-14
-    if: github.repository == 'MayakaApps/Kache' && endsWith(needs.extract-version.outputs.library-version, '-SNAPSHOT')
+    if: endsWith(needs.extract-version.outputs.library-version, '-SNAPSHOT')
 
     permissions:
       contents: read
@@ -46,12 +45,3 @@ jobs:
       - name: Publish
         run: ./gradlew --no-configuration-cache publishAllPublicationsToMavenCentralRepository
 
-  publish-docs:
-    name: Publish Documentation
-
-    needs: extract-version
-    if: github.repository == 'MayakaApps/Kache' && endsWith(needs.extract-version.outputs.library-version, '-SNAPSHOT')
-
-    uses: ./.github/workflows/publish-docs.yml
-    with:
-      library-version: ${{ needs.extract-version.outputs.library-version }}
